@@ -1,0 +1,74 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+-- from book
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE InstanceSigs #-}
+
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE TypeApplications #-}
+
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE TypeOperators #-}
+
+{-# LANGUAGE MonadComprehensions #-}
+{-# LANGUAGE ApplicativeDo #-}
+
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE GeneralisedNewtypeDeriving #-}
+
+
+
+module Main where
+
+import Lib
+import Tree
+import MagicBoxes
+
+class MEq a where
+  (=~=) :: a -> a -> Bool
+
+
+instance (MEq Int) where
+  a =~= b = a == b
+
+--instance (Num p, Eq p) => MEq  p where
+--    a =~= b = a == b
+
+
+instance (MEq a, MEq b) => MEq (a, b) where
+    (x1, y1) =~= (x2, y2) = (x1 =~= x2) && (y1 =~= y2)
+
+
+notEq::Eq a => a -> a -> Bool
+notEq x y  = not $ x == y
+
+testEq = do
+    putStrLn "hello"
+    putStrLn $ show $ (1::Int) =~= (2::Int)
+    putStrLn $ show $ (2::Int) =~= (2::Int)
+    putStrLn $ show $ (3::Int,1::Int) =~= (3::Int,2::Int)
+    putStrLn $ show $ (3::Int,2::Int) =~= (3::Int,2::Int)
+    putStrLn $ show $ notEq 7 5
+
+
+
+
+
+
+main :: IO ()
+main = do
+              putStrLn $ show $ relabel testTree 1
+              putStrLn $ show $ (relabelMTree testTree) (1)
+              putStrLn $ show $ lx +++ ly
+
+         where
+            lx = [1,2,5,7,8]
+            ly = [2,7,8]
