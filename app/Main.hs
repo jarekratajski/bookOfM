@@ -31,6 +31,8 @@ module Main where
 import Lib
 import Tree
 import MagicBoxes
+import MayTheOption
+import JMonad
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -66,9 +68,9 @@ testEq = do
 main :: IO ()
 main = do
               putStrLn $ show $ relabel testTree 1
-              putStrLn $ show $ (relabelMTree testTree) (1)
+              putStrLn $ show $ let ( WithCounter g ) =  (relabelMTree testTree) in g 1
               putStrLn $ show $ lx +++ ly
-
+              putStrLn $ show $ map (\x -> x+x) lx -- Exercise 1.3
          where
             lx = [1,2,5,7,8]
             ly = [2,7,8]
