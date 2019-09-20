@@ -68,7 +68,7 @@ purez v = WithCounter (\x -> (v, x))
 
 
 instance Functor WithCounter where
-      fmap f a = a `next`  (purez f)
+      fmap f a =   a `next` (\x -> purez (f x))
 
 instance  Applicative WithCounter  where
   pure = purez
