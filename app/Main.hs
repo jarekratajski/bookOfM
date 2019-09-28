@@ -33,6 +33,7 @@ import Tree
 import MagicBoxes
 import MayTheOption
 import JMonad
+import JApplicative
 import Utilties
 import MyState
 
@@ -72,6 +73,8 @@ relabelPlay = do
               putStrLn $ show $ let ( WithCounter g ) =  (relabelMTree testTree) in g 1
               putStrLn $ show $ lx +++ ly
               putStrLn $ show $ map (\x -> x+x) lx -- Exercise 1.3
+              putStrLn $ show $ jap (Just (\x -> x + x)) (Just 5)  -- Exercise 3.1
+              putStrLn $ show $ fmap (\a -> a-1 ) zipList
          where
             lx = [1,2,5,7,8]
             ly = [2,7,8]
