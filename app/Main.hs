@@ -78,5 +78,6 @@ relabelPlay = do
          where
             lx = [1,2,5,7,8]
             ly = [2,7,8]
+            zipList   = ZipList { getZipList = [1::Int,6,4,1,2] }
 
 main = statePlay
