@@ -66,9 +66,9 @@ next:: WithCounter a -> (a -> WithCounter b ) -> WithCounter b
 purez:: a -> WithCounter a
 purez v = WithCounter (\x -> (v, x))
 
-
+-- todo (what was that ?
 instance Functor WithCounter where
-      fmap f a = a `next`  (purez f)
+      fmap f a = a `next`  (\x -> purez (f x))
 
 instance  Applicative WithCounter  where
   pure = purez

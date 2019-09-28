@@ -33,6 +33,8 @@ import Tree
 import MagicBoxes
 import MayTheOption
 import JMonad
+import Utilties
+import MyState
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -64,9 +66,8 @@ testEq = do
 
 
 
-
-main :: IO ()
-main = do
+relabelPlay :: IO ()
+relabelPlay = do
               putStrLn $ show $ relabel testTree 1
               putStrLn $ show $ let ( WithCounter g ) =  (relabelMTree testTree) in g 1
               putStrLn $ show $ lx +++ ly
@@ -74,3 +75,5 @@ main = do
          where
             lx = [1,2,5,7,8]
             ly = [2,7,8]
+
+main = statePlay
