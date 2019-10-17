@@ -36,6 +36,9 @@ import JMonad
 import JApplicative
 import Utilties
 import MyState
+import MyTher
+
+
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -80,4 +83,4 @@ relabelPlay = do
             ly = [2,7,8]
             zipList   = ZipList { getZipList = [1::Int,6,4,1,2] }
 
-main = statePlay
+main = mytherPlay
