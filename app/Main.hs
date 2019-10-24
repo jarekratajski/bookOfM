@@ -37,7 +37,7 @@ import JApplicative
 import Utilties
 import MyState
 import MyTher
-
+import LogicP
 
 
 class MEq a where
@@ -83,4 +83,4 @@ relabelPlay = do
             ly = [2,7,8]
             zipList   = ZipList { getZipList = [1::Int,6,4,1,2] }
 
-main = mytherPlay
+main = logicPlay

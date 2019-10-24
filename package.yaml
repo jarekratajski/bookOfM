@@ -21,7 +21,7 @@ description:         Please see the README on GitHub at <https://github.com/Gith
 
 dependencies:
 - base >= 4.7 && < 5
-
+- logict >= 0.7.0.2
 library:
   source-dirs: src
 
