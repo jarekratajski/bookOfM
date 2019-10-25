@@ -14,3 +14,9 @@ instance MonadError e (Either e) where
   throwError z = Left z
   catchError (Left z) f = f (z)
   catchError m _ = m
+
+
+instance MonadError () (Maybe) where
+  throwError () = Nothing
+  catchError  (Just a) f= Just a
+  catchError Nothing f = f()
