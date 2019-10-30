@@ -38,7 +38,7 @@ import Utilties
 import MyState
 import MyTher
 import LogicP
-
+import Mutability8
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -83,4 +83,8 @@ relabelPlay = do
             ly = [2,7,8]
             zipList   = ZipList { getZipList = [1::Int,6,4,1,2] }
 
-main = logicPlay
+-- main = logicPlay
+-- main = putStrLn $ show $ weirdSum
+
+
+main = mutaplay

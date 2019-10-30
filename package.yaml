@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - logict >= 0.7.0.2
 - mtl >= 2.2.2
+- stm>=2.5.0.0
 library:
   source-dirs: src
 
