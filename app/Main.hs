@@ -39,6 +39,7 @@ import MyState
 import MyTher
 import LogicP
 import Mutability8
+import Experiment
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -88,3 +89,7 @@ relabelPlay = do
 
 
 main = mutaplay
+--main :: IO ()
+--main = do
+--        putStrLn $ show $ expe
+--        putStrLn $ show $ expe2

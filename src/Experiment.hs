@@ -1,0 +1,48 @@
+{-# LANGUAGE ViewPatterns #-}
+module Experiment where
+-- lets face it - I do not know how to do nice  lambda calculus here
+--
+--
+--data Fu =  Nu Int | F  (Fu -> Fu)  | Terminal
+--
+--m1::Fu->Fu
+--m1 (F  f )  =  F( \x -> m1 (f x))
+--m1 (Nu x) = F ( \z -> lemin z (Nu x))
+--m1 b = F ( \z -> lemin z b)
+--
+--lemin :: Fu -> Fu -> Fu
+--lemin (Nu x) (Nu y) = Nu (min x y)
+--lemin (Nu x) (F f) = m1 $ f (Nu x)
+--lemin (F f) (Nu x) = m1 $ f (Nu x)
+--lemin a Terminal = a
+--lemin Terminal a = a
+--lemin (F f) a  = F (\x -> lemin (f a) x)
+--lemin a  (F f) = F (\x -> lemin (f a) x)
+--
+--seven :: Fu -> Fu
+--seven   =  numb 7
+--four  = numb 4
+--five = numb 5
+--three = numb 3
+--
+--mf ::Fu -> Fu
+--mf (Nu x) = Nu x
+--mf (F f)  = F (\x -> f x)
+--
+--numb :: Int -> Fu ->Fu
+--numb x Terminal  = Nu x
+--numb x (F f) = f (Nu x)
+--numb x (Nu a) = Nu a
+--
+--
+--
+--instance Show Fu where
+--    show (Nu x) = show x
+--    show (F a) = show (a Terminal)
+--    show Terminal = "t"
+--
+--
+--
+--expe = m1  four   five  Terminal
+--
+--expe2 = (m1 . four  . m1 . three .  five  . seven )  Terminal
