@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/bookOfM.iml" filepath="$PROJECT_DIR$/.idea/bookOfM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/haskMonads.iml" filepath="$PROJECT_DIR$/haskMonads.iml" />
     </modules>
   </component>
 </project>

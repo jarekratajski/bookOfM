@@ -24,3 +24,17 @@ instance Monoid w => Monad (Writer w) where
 
 swapW :: ( Monad m , Monoid w) => Writer w (m a) -> m (Writer w a)
 swapW (Writer( w , mx) ) = fmap (\a -> Writer ( w, a )) mx
+
+
+
+newtype Listed m  a = Listed { unlisted :: [m a] }
+
+instance Monad m => Monad (Listed m) where
+    return a = Listed $ [return a]
+    (Listed xs) >>= f = Listed $ do
+        x <- xs
+        y <- mapM (unlisted . f ) x
+        return ( concat y)
+        
+instance Monad m => Functor (Listed m) where
+  fmap f li =  Listed $   fmap f (unlisted li)         
