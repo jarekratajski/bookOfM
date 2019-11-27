@@ -1,6 +1,32 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+-- from book
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE InstanceSigs #-}
+
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE TypeApplications #-}
+
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE TypeOperators #-}
+
+{-# LANGUAGE MonadComprehensions #-}
+{-# LANGUAGE ApplicativeDo #-}
+
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE GeneralisedNewtypeDeriving #-}
+
 module CombinMonands10 where
 
+import Control.Monad
 
 swap :: Monad m => Maybe (m a) -> m (Maybe a)
 swap Nothing = return Nothing
@@ -29,12 +55,15 @@ swapW (Writer( w , mx) ) = fmap (\a -> Writer ( w, a )) mx
 
 newtype Listed m  a = Listed { unlisted :: [m a] }
 
-instance Monad m => Monad (Listed m) where
-    return a = Listed $ [return a]
+instance (Monad m, Foldable m, Traversable m) => Monad (Listed m) where
+    return a = Listed $ [return  a]
     (Listed xs) >>= f = Listed $ do
         x <- xs
-        y <- mapM (unlisted . f ) x
-        return ( concat y)
-        
+        y <-   mapM (unlisted . f)  x
+        return $  join y
+
 instance Monad m => Functor (Listed m) where
-  fmap f li =  Listed $   fmap f (unlisted li)         
+  fmap f (Listed x) =  Listed $   ( fmap (fmap f) x)
+  
+instance Monad m => Applicative (Listed m) where
+     pure a = Listed $ [return a]
