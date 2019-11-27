@@ -41,17 +41,12 @@ instance Functor (Writer w ) where
 instance Monoid w => Applicative (Writer w) where
     pure x = Writer ( mempty,  x)
 
-
 instance Monoid w => Monad (Writer w) where
     return x = Writer ( mempty,  x)
-    -- join (Writer (w1, Writer (w2, x))) = Writer (w1 `mappend` w2, x )
     Writer (w1, x) >>= f = let Writer (w2 , y) = f x in Writer ( w1 `mappend` w2, y)
-
 
 swapW :: ( Monad m , Monoid w) => Writer w (m a) -> m (Writer w a)
 swapW (Writer( w , mx) ) = fmap (\a -> Writer ( w, a )) mx
-
-
 
 newtype Listed m  a = Listed { unlisted :: [m a] }
 
@@ -64,6 +59,6 @@ instance (Monad m, Foldable m, Traversable m) => Monad (Listed m) where
 
 instance Monad m => Functor (Listed m) where
   fmap f (Listed x) =  Listed $   ( fmap (fmap f) x)
-  
+
 instance Monad m => Applicative (Listed m) where
      pure a = Listed $ [return a]
