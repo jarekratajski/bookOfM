@@ -40,6 +40,7 @@ import MyTher
 import LogicP
 import Mutability8
 import Experiment
+import CombinMonands10
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -88,8 +89,10 @@ relabelPlay = do
 -- main = putStrLn $ show $ weirdSum
 
 
-main = mutaplay
+-- main = mutaplay
 --main :: IO ()
 --main = do
 --        putStrLn $ show $ expe
 --        putStrLn $ show $ expe2
+
+main = problemWithListed

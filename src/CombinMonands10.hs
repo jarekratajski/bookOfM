@@ -62,3 +62,15 @@ instance Monad m => Functor (Listed m) where
 
 instance Monad m => Applicative (Listed m) where
      pure a = Listed $ [return a]
+
+instance (Monad m, Show (m a)) => Show (Listed m a)   where
+  show (Listed x) = show x
+
+v :: Int -> Listed [] Int
+v 0 = Listed[[0,1]]
+v 1 = Listed [[0],[1]]
+
+problemWithListed :: IO ()
+problemWithListed = do
+    print $ ((v <=< v)  <=<  v) 0
+    print $ (v <=< ( v <=< v)) 0
