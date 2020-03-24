@@ -19,11 +19,16 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/Github username here/haskMonads#readme>
 
+
+
 dependencies:
 - base >= 4.7 && < 5
 - logict >= 0.7.0.2
 - mtl >= 2.2.2
 - stm>=2.5.0.0
+- memoize
+
+
 library:
   source-dirs: src
 
@@ -35,6 +40,7 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -O2
     dependencies:
     - haskMonads
 

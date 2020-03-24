@@ -56,13 +56,14 @@ instance Functor Evaluator where
 
 
 instance Applicative Evaluator where
-  pure a = Evaluator $ Reader $ \_ -> Just a
+  pure a = Evaluator $ ReaderT {runReaderT  =  \_ -> Identity $ Just a }
 
 
 instance Monad Evaluator where
-        return x = Evaluator $ Reader $ \_ -> Just x
-        (Evaluator x) >>= f  = Evaluator $ Reader $ \a ->
+        return  = pure
+        (Evaluator x) >>= f  = Evaluator $ ReaderT  { runReaderT =  \a ->
             case runReader x a of
-                Nothing -> Nothing
+                Nothing -> Identity Nothing
                 Just y    -> let Evaluator e = f y
-                                  in runReader e a
+                                  in runReaderT e a
+            }

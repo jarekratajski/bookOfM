@@ -41,6 +41,7 @@ import LogicP
 import Mutability8
 import Experiment
 import CombinMonands10
+import Transformers11
 
 class MEq a where
   (=~=) :: a -> a -> Bool
@@ -96,3 +97,9 @@ relabelPlay = do
 --        putStrLn $ show $ expe2
 
 main = problemWithListed
+
+-- main = mapM_ print $ uncurry mack <$> [(0, 0), (3, 20) ]
+--
+-- main = print $ acks !! 3 <!! 20
+
+-- main = print $ mack 3 14
