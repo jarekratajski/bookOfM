@@ -96,10 +96,12 @@ relabelPlay = do
 --        putStrLn $ show $ expe
 --        putStrLn $ show $ expe2
 
-main = problemWithListed
+-- main = problemWithListed
 
 -- main = mapM_ print $ uncurry mack <$> [(0, 0), (3, 20) ]
 --
 -- main = print $ acks !! 3 <!! 20
 
 -- main = print $ mack 3 14
+
+main = evaltransformtest
