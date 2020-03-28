@@ -145,6 +145,10 @@ instance (Monad m) => Monad (MyEitherT e m ) where
 
 newtype MyStateT s m a = MyStateT{runMyStateT :: s -> m (a, s)}
 
+unMyStateT::(Monad m) => MyStateT s m a ->s -> m a
+unMyStateT sm x =  fmap fst  $ runMyStateT sm $ x 
+ 
+
 instance (Functor m )=> Functor (MyStateT  s m ) where
       fmap f x = MyStateT  func
               where
@@ -155,9 +159,19 @@ instance (Functor m )=> Functor (MyStateT  s m ) where
 
 
 instance (Applicative m) => Applicative (MyStateT s m) where
-      pure x = MyStateT $ \s -> fmap (\a -> (a,s)) (pure x) 
+      pure x = MyStateT $ \s -> fmap (, s) (pure x)
 
+instance (Monad m) => Monad (MyStateT s m ) where
+    return = pure
+    (MyStateT x) >>= f = 
+    
+    
 -- testing functor
--- let myMaybeA1 = Just 5
+myMaybeA1 = Just 5
+myMaybeStateA1 = pure 5 :: (MyStateT Integer Maybe Integer)
+
+myMaybeNext = fmap (+1) myMaybeStateA1
+testStateT::IO ()
+testStateT = putStrLn $ show $ unMyStateT myMaybeNext  1
 
 
