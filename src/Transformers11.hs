@@ -165,20 +165,40 @@ instance (Monad m) => Monad (MyStateT s m ) where
     return = pure
     (MyStateT x) >>= f = MyStateT $ \s ->
               let
-                  calculated = x s -- m ( a, s) 
+                  calculated = x s -- m ( a, s)
                   justa = fmap fst calculated -- m a
-                  extf = \z -> (runMyStateT $ f z) s  
-                  inInnerMonad = justa >>= extf 
-              in inInnerMonad 
+                  extf z = (runMyStateT $ f z) s
+                  inInnerMonad = justa >>= extf
+              in inInnerMonad
 
 
 
 -- testing functor
 myMaybeA1 = Just 5
+
 myMaybeStateA1 = pure 5 :: (MyStateT Integer Maybe Integer)
-
 myMaybeNext = fmap (+1) myMaybeStateA1
+myMaybeStateA2 = myMaybeNext >>= (\x -> pure $ x+1)
+
 testStateT::IO ()
-testStateT = putStrLn $ show $ unMyStateT myMaybeNext  1
+testStateT = print (unMyStateT myMaybeNext 1) >>
+        print (unMyStateT myMaybeStateA2 1) >>
+        print "o"
 
 
+newtype MyReaderT r m a = MyReaderT { runMyReaderT :: r -> m a }
+
+instance (Functor m) => Functor (MyReaderT r m) where
+    fmap f x  = MyReaderT $ \r -> fmap f (runMyReaderT x r)
+
+instance (Applicative m) => Applicative (MyReaderT r m) where
+      pure x = MyReaderT $ \r -> pure x
+    
+instance (Monad m) => Monad (MyReaderT r m ) where 
+      return = pure
+      (MyReaderT x) >>= f = MyReaderT $ \r ->
+                    let 
+                          inmonad = x r
+                          innerf z = (runMyReaderT $ f z) r 
+                          bound = inmonad >>= innerf
+                     in  bound   
