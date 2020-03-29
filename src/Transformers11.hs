@@ -223,7 +223,7 @@ instance (Monoid w, Monad m) => Monad (MyWriterT w m) where
                  (b,w2) <- runMyWriterT $ f a
                  return (b, mappend w1 w2)
 
-tell::(Monad m) => w -> MyWriterT w m ()  
+tell::(Monad m) => w -> MyWriterT w m ()
 tell v = MyWriterT  $ pure ((), v)
 
 
@@ -243,3 +243,30 @@ testWriteT = print (runMyWriterT myMaybeWriteNext) >>
         print (runMyWriterT myMaybeWriteA2) >>
         print "o writer"
 
+-- Identity 11.3
+
+newtype MyIdentity a = MyId a
+
+instance Functor MyIdentity where 
+      fmap f (MyId x) = MyId $ f x
+
+instance Applicative MyIdentity where 
+      pure x = MyId $ x
+      
+instance Monad MyIdentity where 
+      return = pure
+      (MyId x) >>= f = f x             
+      
+
+
+toIdentity:: a ->MyIdentity a
+toIdentity = pure
+
+fromIdentity:: MyIdentity a -> a
+fromIdentity (MyId  x) = x
+
+testIdentity::IO () 
+testIdentity = print plain
+                       where
+                         inMonad = toIdentity 5
+                         plain = fromIdentity inMonad 
