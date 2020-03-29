@@ -193,12 +193,53 @@ instance (Functor m) => Functor (MyReaderT r m) where
 
 instance (Applicative m) => Applicative (MyReaderT r m) where
       pure x = MyReaderT $ \r -> pure x
-    
-instance (Monad m) => Monad (MyReaderT r m ) where 
+
+instance (Monad m) => Monad (MyReaderT r m ) where
       return = pure
       (MyReaderT x) >>= f = MyReaderT $ \r ->
-                    let 
+                    let
                           inmonad = x r
-                          innerf z = (runMyReaderT $ f z) r 
+                          innerf z = (runMyReaderT $ f z) r
                           bound = inmonad >>= innerf
-                     in  bound   
+                     in  bound
+
+--
+data MyWriterT w m a  = MyWriterT { runMyWriterT :: m (a, w) }
+
+instance (Monoid w, Functor m) => Functor (MyWriterT w m) where
+      fmap f x =  MyWriterT $ fmap innerf innerMonad
+                      where
+                          innerMonad = runMyWriterT x
+                          innerf (a,w) = (f a, w)
+
+instance (Monoid w, Applicative m) => Applicative (MyWriterT w m ) where
+    pure x = MyWriterT  $ pure (x, mempty)
+
+instance (Monoid w, Monad m) => Monad (MyWriterT w m) where
+    return  = pure
+    (MyWriterT x) >>= f = MyWriterT $
+                do
+                 (a,w1) <- x
+                 (b,w2) <- runMyWriterT $ f a
+                 return (b, mappend w1 w2)
+
+tell::(Monad m) => w -> MyWriterT w m ()  
+tell v = MyWriterT  $ pure ((), v)
+
+
+instance Semigroup Integer where
+    (<>) = (+)
+
+instance Monoid Integer where
+  mempty = 0
+
+
+myMaybeWriteA1 = pure 5 :: (MyWriterT Integer Maybe Integer)
+myMaybeWriteNext = fmap (+1) myMaybeWriteA1
+myMaybeWriteA2 = tell 12 >> myMaybeWriteNext >>= (\x ->  tell 2 >> (pure $ x+3)  )
+
+testWriteT::IO ()
+testWriteT = print (runMyWriterT myMaybeWriteNext) >>
+        print (runMyWriterT myMaybeWriteA2) >>
+        print "o writer"
+
