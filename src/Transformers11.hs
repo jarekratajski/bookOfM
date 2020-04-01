@@ -270,3 +270,38 @@ testIdentity = print plain
                        where
                          inMonad = toIdentity 5
                          plain = fromIdentity inMonad 
+
+
+-- parsing
+
+type Parser a = StateT String [] a
+
+
+
+
+satisfies::(Char->Bool) -> Parser Char
+satisfies p = StateT $ \s ->
+                          case s of
+                              "" -> []
+                              (c:cs ) | p c  -> [(c,cs)]
+                                         | otherwise -> []
+
+
+char :: Char->Parser Char
+char c = satisfies (== c)
+
+satisfiesTest::IO ()
+satisfiesTest = print $ runStateT s2 "cfgac"
+  where
+    s1 = ((== 'c'))
+    s2 = satisfies s1
+
+charTest::IO ()
+charTest = print $ runStateT (char2 '7') "a7jaksk7"  
+
+char2::Char->Parser Char
+char2 chr = StateT $ \s -> 
+                        case s of 
+                          "" -> []
+                          (c:cs )  | chr == c -> [(c,cs)]
+                                      | otherwise -> []
