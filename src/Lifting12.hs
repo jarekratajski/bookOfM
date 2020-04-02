@@ -23,6 +23,9 @@ module Lifting12 where
 
 import Control.Monad.Trans.Reader ( ReaderT(..) )
 import qualified Control.Monad.Trans.Reader as RT (ask, local, reader)
+import Control.Monad.ST.Lazy.Safe (ST)
+import System.IO (IOMode, Handle, withFile)
+import Control.Monad.IO.Unlift
 
 
 class Monad m => MonadReader r m | m -> r where
@@ -61,3 +64,26 @@ instance MonadWriter w m => MonadWriter w  (ReaderT w m) where
 
 instance MonadError e m => MonadError e (ReaderT  e m) where
     throwError x = ReaderT $ (\_ -> throwError x)
+
+
+-- 12.2
+
+class (Monad b, Monad m) =>  MonadBase b m | m -> b where
+    liftBase :: b a -> m a
+
+
+instance  MonadBase IO IO where
+    liftBase = id -- ???
+
+instance  MonadBase (ST s) (ST s) where
+        liftBase = id -- ???
+
+
+-- 12.3
+
+myWithFile:: (MonadUnliftIO m ) =>FilePath -> IOMode -> (Handle -> m r ) -> m r
+myWithFile path mode handler = withRunInIO $ \run -> withFile path mode (run . handler) 
+
+         
+                   
+          
