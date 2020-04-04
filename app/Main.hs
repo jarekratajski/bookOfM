@@ -42,6 +42,7 @@ import Mutability8
 import Experiment
 import CombinMonands10
 import Transformers11
+import CustomMonads13
 
 class MEq a where
   (=~=) :: a -> a -> Bool
