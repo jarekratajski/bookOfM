@@ -30,6 +30,8 @@ dependencies:
 - transformers
 - unliftio-core
 - containers
+- promises
+- random
 
 
 library:
