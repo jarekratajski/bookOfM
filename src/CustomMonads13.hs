@@ -81,3 +81,6 @@ instance FS (State MockFileSystem) where
                                 return $ maybe nofile  Right $ M.lookup path fs
                                 where
                                     nofile = Left $ userError "File does not exist"
+                                    
+                                    
+                                    
