@@ -1,6 +1,32 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE InstanceSigs #-}
+
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE TypeApplications #-}
+
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE TypeOperators #-}
+
+{-# LANGUAGE MonadComprehensions #-}
+{-# LANGUAGE ApplicativeDo #-}
+
+{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE GeneralisedNewtypeDeriving #-}
 module FreeMonad13 where
 
 import qualified Data.Map as   M( Map(..), lookup, insert)
+import qualified System.IO as System.IO
+import Control.Exception
 
 data TicTacToeF r = Info Position (Maybe Player -> r)
                                | Take Position (Result -> r)
@@ -11,7 +37,7 @@ data Player = O | X deriving (Eq, Ord)
 
 type Board = M.Map Position Player
 
-data Result = AlreadyTaken { by :: Player}
+data Result = AlreadyTaken { bya :: Player}
                     | NextTurn
                     | GameEnded { winner::Player}
 
@@ -48,5 +74,37 @@ type TicTacToe = Free TicTacToeF
 --Free (fmap (fmap f)  (Info p k))
 ---- Free (fmap (fmap f) (Free (Info p (\mp -> r)  )))
 --Free (Info p  ((fmap f) . k)  )
---Free (Info p  ((fmap f) . \r -> k r)  ) ??
+--Free (Info p  ((fmap f) . (\r -> k r))  ) ??
 
+liftF :: Functor f => f a -> Free f a
+liftF = Free . fmap return
+
+
+foldFree :: Monad m => (forall r. f r -> m r) -> Free f a -> m a
+foldFree _ (Pure x) = return x
+foldFree interpret (Free x) = do
+                                x' <- interpret x
+                                foldFree interpret x'
+
+
+-- fs
+
+type FSError = IOError
+
+data  FSF r = WriteFile FilePath String (Either FSError () -> FSF r )
+                  | ReadFile FilePath (Either FSError String -> FSF r)
+
+
+runFSF::FSF a ->  IO a
+runFSF  (WriteFile path contents k)  = do
+        System.IO.writeFile path contents
+        runFSF $ k (Right ())
+        `catch`  \ex ->  runFSF $ k (Left ex)
+
+runFSF (ReadFile path k) = do
+        contents <- System.IO.readFile path
+        runFSF  $ k $ Right contents
+        `catch`  \ex -> runFSF $ k (Left ex)
+        
+runFS = foldFree runFSF        
+        
