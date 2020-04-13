@@ -94,7 +94,7 @@ type FSError = IOError
 data  FSF r = WriteFile FilePath String (Either FSError () -> FSF r )
                   | ReadFile FilePath (Either FSError String -> FSF r)
 
-
+-- this is not really as in the book
 runFSF::FSF a ->  IO a
 runFSF  (WriteFile path contents k)  = do
         System.IO.writeFile path contents
@@ -105,6 +105,6 @@ runFSF (ReadFile path k) = do
         contents <- System.IO.readFile path
         runFSF  $ k $ Right contents
         `catch`  \ex -> runFSF $ k (Left ex)
-        
-runFS = foldFree runFSF        
-        
+
+runFS = foldFree runFSF
+
