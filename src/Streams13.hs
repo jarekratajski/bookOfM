@@ -43,7 +43,7 @@ instance Functor TicTacToe where
 
 instance Applicative TicTacToe where
       pure = Done
-      f <*> x = do 
+      f <*> x = do
                       x' <- x
                       f' <- f
                       return (f' x')
@@ -61,3 +61,28 @@ type Board = M.Map Position Player
 data Result = AlreadyTaken { bya :: Player}
                     | NextTurn
                     | GameEnded { winner::Player}
+
+
+type FSError = IOError
+
+data  FS a  where
+    WriteFile:: FilePath-> String -> FS (Either FSError ())
+    ReadFile :: FilePath ->FS (Either FSError String)
+    FSDone :: a -> FS a
+    FSBind:: FS a -> (a -> FS b) -> FS b
+
+instance Functor FS where
+    fmap  f x = FSBind x (FSDone . f)
+
+instance Applicative FS where
+  pure = FSDone
+
+instance Monad FS where
+   return = pure
+   (>>=) = FSBind
+
+writeFileFS :: FilePath -> String -> FS (Either FSError ())
+writeFileFS path contents = WriteFile path contents
+
+readFileFS :: FilePath -> FS (Either FSError String)
+readFileFS  path  = ReadFile path
