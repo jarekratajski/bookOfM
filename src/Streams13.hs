@@ -86,3 +86,21 @@ writeFileFS path contents = WriteFile path contents
 
 readFileFS :: FilePath -> FS (Either FSError String)
 readFileFS  path  = ReadFile path
+
+
+data Program instr a where
+      PDone :: a -> Program instr a
+      PBind :: Program instr b -> (b-> Program instr a)-> Program instr a
+      Instr:: instr a -> Program instr a
+      
+      
+instance Functor (Program instr) where
+      fmap f x =  PBind x (PDone . f)
+      
+      
+instance Applicative (Program instr) where
+      pure = PDone
+      
+instance Monad (Program instr) where
+      return = pure
+      (>>=) = PBind
