@@ -29,6 +29,7 @@ import qualified Data.Map as   M( Map(..), lookup, insert)
 import qualified System.IO as System.IO
 
 import Control.Exception
+import Control.Monad.Cont ((<=<))
 
 
 data TicTacToe a where
@@ -92,15 +93,33 @@ data Program instr a where
       PDone :: a -> Program instr a
       PBind :: Program instr b -> (b-> Program instr a)-> Program instr a
       Instr:: instr a -> Program instr a
-      
-      
+
+
 instance Functor (Program instr) where
       fmap f x =  PBind x (PDone . f)
-      
-      
+
+
 instance Applicative (Program instr) where
       pure = PDone
-      
+
 instance Monad (Program instr) where
       return = pure
       (>>=) = PBind
+
+
+data Freer instr a where
+  Pure::a-> Freer instr a
+  Impure :: instr a -> (a -> Freer instr b) -> Freer instr b
+
+instance Monad  (Freer instr) where
+    return = Pure
+    Pure x >>= f = f x
+    Impure x k >>= f = Impure x ( f <=< k)
+
+instance Functor (Freer instr) where
+   fmap f x = x >>= Pure . f
+
+instance Applicative (Freer instr) where
+   pure = Pure
+   f <*> x = f >>= (`fmap` x)
+
