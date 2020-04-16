@@ -89,11 +89,6 @@ readFileFS :: FilePath -> FS (Either FSError String)
 readFileFS  path  = ReadFile path
 
 
-data Program instr a where
-      PDone :: a -> Program instr a
-      PBind :: Program instr b -> (b-> Program instr a)-> Program instr a
-      Instr:: instr a -> Program instr a
-
 
 instance Functor (Program instr) where
       fmap f x =  PBind x (PDone . f)
@@ -107,9 +102,6 @@ instance Monad (Program instr) where
       (>>=) = PBind
 
 
-data Freer instr a where
-  Pure::a-> Freer instr a
-  Impure :: instr a -> (a -> Freer instr b) -> Freer instr b
 
 instance Monad  (Freer instr) where
     return = Pure
@@ -122,4 +114,25 @@ instance Functor (Freer instr) where
 instance Applicative (Freer instr) where
    pure = Pure
    f <*> x = f >>= (`fmap` x)
+
+data Program instr a where
+      PDone :: a -> Program instr a
+      PBind :: Program instr b -> (b-> Program instr a)-> Program instr a
+      Instr:: instr a -> Program instr a
+
+data Freer instr a where
+  Pure::a-> Freer instr a
+  Impure :: instr a -> (a -> Freer instr b) -> Freer instr b
+
+twoToThree :: Freer instr a -> Program instr a
+twoToThree (Pure x) = PDone x
+twoToThree (Impure x f) = PBind (Instr x) (twoToThree . f)
+
+threeToTwo :: Program instr a -> Freer instr a
+threeToTwo (PDone x) = Pure x
+threeToTwo (Instr x) = Impure x Pure
+threeToTwo (PBind x f) = threeToTwo x >>= threeToTwo . f
+
+
+
 
