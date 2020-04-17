@@ -72,7 +72,7 @@ data  FS a  where
     WriteFile:: FilePath-> String -> FS (Either FSError ())
     ReadFile :: FilePath ->FS (Either FSError String)
     FSDone :: a -> FS a
-    FSBind:: FS a -> (a -> FS b) -> FS b
+    FSBind:: FS a -> (a -> FS b) -> FS bk
 
 instance Functor FS where
     fmap  f x = FSBind x (FSDone . f)
@@ -169,3 +169,10 @@ interpretStack (Free.Free (Push v r)) = do
 
 foo::[RPNInstruction]->Integer
 foo x = evalState (interpretStack $ evaluates x) []
+
+
+fooTest :: IO ()
+fooTest = print $ foo myInstructions
+                where myInstructions = [Number 3, Number 2, Plus, Number 7, Times]
+
+-- omg it WORKS!!!
