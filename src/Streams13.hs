@@ -30,6 +30,8 @@ import qualified System.IO as System.IO
 
 import Control.Exception
 import Control.Monad.Cont ((<=<))
+import qualified FreeMonad13 as Free
+import Control.Monad.State.Lazy (State, get, put, modify, runState, evalState)
 
 
 data TicTacToe a where
@@ -133,6 +135,37 @@ threeToTwo (PDone x) = Pure x
 threeToTwo (Instr x) = Impure x Pure
 threeToTwo (PBind x f) = threeToTwo x >>= threeToTwo . f
 
+data IStackF r = Pop (Integer -> r) | Push Integer r deriving Functor
+type IStack = Free.Free IStackF
+
+pop :: IStack Integer
+pop = Free.liftF (Pop id)
+
+push :: Integer -> IStack ()
+push v = Free.liftF (Push v ())
+
+data RPNInstruction = Number Integer | Plus | Times
+
+evaluates :: [RPNInstruction] -> IStack Integer
+evaluates [] = pop
+evaluates ((Number n) : r) = push n >> evaluates r
+evaluates (Plus : r)= ((+) <$> pop <*> pop ) >>= push >> evaluates r
+evaluates (Times : r) = ((*) <$> pop <*> pop)>>= push >> evaluates r
+
+interpretStack :: IStack a -> State [Integer] a
+interpretStack (Free.Pure x) = pure x
+interpretStack (Free.Free (Pop f)) = do
+                                                      stck <- get
+                                                      put $ tail stck
+                                                      case stck of
+                                                          [] -> error "stack underflow"
+                                                          (x:xs) ->  interpretStack $ f  x
+interpretStack (Free.Free (Push v r)) = do
+                                                      stck <- get
+                                                      put $ v:stck
+                                                      interpretStack $ r
 
 
 
+foo::[RPNInstruction]->Integer
+foo x = evalState (interpretStack $ evaluates x) []
