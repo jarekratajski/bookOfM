@@ -43,6 +43,7 @@ import Experiment
 import CombinMonands10
 import Transformers11
 import CustomMonads13
+import OperationalStack13
 
 class MEq a where
   (=~=) :: a -> a -> Bool

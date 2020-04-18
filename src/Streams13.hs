@@ -176,3 +176,5 @@ fooTest = print $ foo myInstructions
                 where myInstructions = [Number 3, Number 2, Plus, Number 7, Times]
 
 -- omg it WORKS!!!
+
+
